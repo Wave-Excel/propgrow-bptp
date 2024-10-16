@@ -550,9 +550,9 @@ button.btn.extra-brochure {
 .banner-status {
   position: absolute;
   top: 20%;
-  right: 0;
+  left: 0;
   z-index: 9;
-  background: linear-gradient(45deg, #000000, #151c2b, #1d3873);
+  background: linear-gradient(45deg, #000000, #152b27, #1d7342);
   content: "";
   box-shadow: 0 0 2px #fff;
   color: #fff;
