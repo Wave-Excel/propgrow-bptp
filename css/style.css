@@ -552,7 +552,7 @@ button.btn.extra-brochure {
   top: 20%;
   right: 0;
   z-index: 9;
-  background: linear-gradient(45deg, #000000, #152b27, #1d7342);
+  background: linear-gradient(45deg, #000000, #E69E20, #e6d920);
   content: "";
   box-shadow: 0 0 2px #fff;
   color: #fff;
