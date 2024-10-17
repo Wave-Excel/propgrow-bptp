@@ -512,8 +512,9 @@
     </div>
     <div class="calltoactionmobileresponsive">
         <div class="mobile-icon">
-            <a href="" data-toggle="modal" data-target="#enquire-now"><i class="fa fa-phone" aria-hidden="true"></i></a>
+            <a href="tel:+1234567890" id="call-icon"><i class="fa fa-phone" aria-hidden="true"></i></a>
         </div>
+        
     </div>
     <div class="calltoactionresponsive">
         <span data-toggle="modal" data-target="#enquire-now"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;&nbsp;Enquire Now</span> 
@@ -581,6 +582,22 @@
       </div>
   </div>
 </div>
+<script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+<script type="text/javascript">
+   (function(){
+      emailjs.init({
+        publicKey: "ryy-0Gdq6RqDoXCwX",
+      });
+   })();
+</script>
+<script>
+    document.getElementById('call-icon').addEventListener('click', function(event) {
+        const phoneNumber = '+1234567890'; // Replace with the actual number
+        window.location.href = `tel:${phoneNumber}`; // Redirect to call the number
+    });
+    </script>
 <script>
     // Wait for the page to fully load
     window.onload = function() {
@@ -590,36 +607,63 @@
       }, 3000); // 3000ms = 3 seconds
     };
 
-    function submitForm(event) {
-        event.preventDefault();  // Ensure the form doesn't submit
-        const formData = new FormData(event.target); // `event.target` refers to the form element
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-        data['url'] = window.location.href;
-        fetch('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjYwNTZjMDYzNjA0M2Q1MjZhNTUzMTUxMzUi_pc', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => {
-            if (response.ok) {
-                console.log("form submitted successfully", JSON.stringify(data));
-                console.log(response);
-                alert('form submitted successfully');
-                window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
-            } else {
-                alert('There was an error submitting the form.');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('There was an error submitting the form.');
-        });
+
+function submitForm(event) {
+    event.preventDefault();  // Ensure the form doesn't submit
+    const formData = new FormData(event.target); // `event.target` refers to the form element
+    const data = {};
+    
+    // Add form fields to data object
+    formData.forEach((value, key) => {
+        data[key] = value;
+    });
+    
+    // Add the current date and time to the data
+    const currentDate = new Date();
+    data['submissionDate'] = currentDate.toISOString();  // Use ISO format for date
+    console.log(data);
+    // Add current URL
+    data['url'] = window.location.href;
+    
+    // Example structure of email data based on your EmailJS template
+    const emailData = {
+        name: data.name, // Assuming 'name' field exists in your form
+        email: data.email, // Assuming 'email' field exists in your form
+        phone: data.phone,
+        url: data.url
     };
+
+    // First, send data to the Pabbly webhook
+    fetch('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjYwNTZjMDYzNjA0M2Q1MjZhNTUzMTUxMzUi_pc', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log("Webhook data submitted successfully", JSON.stringify(data));
+            
+            // Now, send the email using EmailJS
+            return emailjs.send('service_sobt4w4', 'template_t19t7pd', emailData); // Replace with your actual Service ID and Template ID
+        } else {
+            alert('There was an error submitting the form to the webhook.');
+            throw new Error('Webhook submission failed');
+        }
+    })
+    .then((emailResponse) => {
+        console.log("Email sent successfully:", emailResponse);
+        alert('Form submitted successfully');
+        window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error submitting the form.');
+    });
+}
+
+
 
   </script>
   
