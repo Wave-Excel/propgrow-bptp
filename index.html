@@ -716,14 +716,9 @@
         if (result.result === "success") {
             console.log("Data submitted successfully to Google Sheets");
             window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
-        } else {
-            alert('There was an error submitting the form to the Google Sheet.');
-        }
+        } 
     })
-    .catch(error => {
-        console.log('Error:', error);
-        alert('There was an error submitting the form.');
-    });
+    
 }
 
 
