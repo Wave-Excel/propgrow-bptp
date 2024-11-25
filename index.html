@@ -26,6 +26,58 @@
     <meta property="og:description" content="">
     <meta property="og:type" content="website">
     <meta property="og:image" content="">  
+    <style>
+           /* sticky footer bottom */
+   .sticky-enquire {
+    display: none !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color:#203973;
+    color: #fff;
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+    font-size: 16px;
+    /* font-weight: bold; */
+    font-family: sans-serif;
+}
+
+.form-section2>input{
+  color: black !important;
+}
+
+
+.enquire-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    text-align: center;
+}
+
+.enquire-item:not(:last-child) {
+    border-right: 1px solid #fff;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    
+}
+
+@media (max-width: 560px) {
+    .sticky-enquire {
+        display: flex !important;
+    }
+    .calltoactionmobileresponsive{
+        display: none;
+    }
+}
+
+    </style>
 </head>
 <body>
     <header id="dynamic" class="newClass">
@@ -512,13 +564,24 @@
     </div>
     <div class="calltoactionmobileresponsive">
         <div class="mobile-icon">
-            <a href="tel:+1234567890" id="call-icon"><i class="fa fa-phone" aria-hidden="true"></i></a>
+            <a href="#" onclick="sendWhatsAppMessage()"><i class="fa fa-phone" aria-hidden="true"></i></a>
         </div>
         
     </div>
-    <div class="calltoactionresponsive">
-        <span data-toggle="modal" data-target="#enquire-now"><i class="fa fa-envelope-o" aria-hidden="true"></i>&nbsp;&nbsp;Enquire Now</span> 
-    </div>
+    <div class="sticky-enquire">
+        <div class="enquire-item" onclick="scrollAndCall()">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/phone.png" alt="Call Icon" class="icon">
+            <span>Call</span>
+        </div>
+        <div class="enquire-item" data-toggle="modal" data-target="#enquire-now">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/email.png" alt="Mail Icon" class="icon">
+            <span>Enquire</span>
+        </div>
+        <div class="enquire-item" onclick="sendWhatsAppMessage()">
+            <img src="https://img.icons8.com/ios-filled/50/ffffff/whatsapp.png" alt="WhatsApp Icon" class="icon">
+            <span>WhatsApp</span>
+        </div>
+      </div>
     <script src="js/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
     <script src="js/swiper-bundle.min.js"></script>
@@ -592,12 +655,7 @@
       });
    })();
 </script>
-<script>
-    document.getElementById('call-icon').addEventListener('click', function(event) {
-        const phoneNumber = '+1234567890'; // Replace with the actual number
-        window.location.href = `tel:${phoneNumber}`; // Redirect to call the number
-    });
-    </script>
+
 <script>
     // Wait for the page to fully load
     window.onload = function() {
@@ -607,61 +665,69 @@
       }, 3000); // 3000ms = 3 seconds
     };
 
+    function sendWhatsAppMessage() {
+            // Define the phone number in international format (without spaces or special characters)
+            const phoneNumber = "08882653184"; // Replace with the correct number
+            
+            // Define the message to be pre-filled in WhatsApp
+            const message = "Hi, I am interested in BPTP Property. Please share the details.";
 
-function submitForm(event) {
+            // Open WhatsApp with the pre-filled message and dynamic phone number
+            window.open(`https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`, '_blank');
+        }
+
+    function scrollAndCall() {
+   
+
+   // Initiate call
+   setTimeout(() => {
+       window.location.href = 'tel:08882653184';
+   }, 500); // Adjust delay if needed
+}
+
+
+    function submitForm(event) {
     event.preventDefault();  // Ensure the form doesn't submit
     const formData = new FormData(event.target); // `event.target` refers to the form element
     const data = {};
-    
+
     // Add form fields to data object
     formData.forEach((value, key) => {
         data[key] = value;
     });
-    
+
     // Add the current date and time to the data
     const currentDate = new Date();
     data['submissionDate'] = currentDate.toISOString();  // Use ISO format for date
-    console.log(data);
+
     // Add current URL
     data['url'] = window.location.href;
-    
-    // Example structure of email data based on your EmailJS template
-    const emailData = {
-        name: data.name, // Assuming 'name' field exists in your form
-        email: data.email, // Assuming 'email' field exists in your form
-        phone: data.phone,
-        url: data.url
-    };
 
-    // First, send data to the Pabbly webhook
-    fetch('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjYwNTZjMDYzNjA0M2Q1MjZhNTUzMTUxMzUi_pc', {
+    // Send data directly to Google Sheet
+    fetch('https://script.google.com/macros/s/AKfycbyjMjI4Mb29lj15bhiZDQAXEqBYVPlPToNeQ92Ma-9K6C0ICdC_rldJQRiDpIVJ-iqW/exec', {  // Replace with your Web App URL
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    .then(response => {
-        if (response.ok) {
-            console.log("Webhook data submitted successfully", JSON.stringify(data));
-            
-            // Now, send the email using EmailJS
-            return emailjs.send('service_sobt4w4', 'template_t19t7pd', emailData); // Replace with your actual Service ID and Template ID
+    .then(response => response.json())  // Convert the response to JSON
+    .then(result => {
+        if (result.result === "success") {
+            console.log("Data submitted successfully to Google Sheets");
+            window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
         } else {
-            alert('There was an error submitting the form to the webhook.');
-            throw new Error('Webhook submission failed');
+            alert('There was an error submitting the form to the Google Sheet.');
         }
     })
-    .then((emailResponse) => {
-        console.log("Email sent successfully:", emailResponse);
-        alert('Form submitted successfully');
-        window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
-    })
     .catch(error => {
-        console.error('Error:', error);
+        console.log('Error:', error);
         alert('There was an error submitting the form.');
     });
 }
+
+
+
 
 
 
