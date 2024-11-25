@@ -40,7 +40,7 @@
     justify-content: space-around;
     padding: 10px 0;
     font-size: 16px;
-    /* font-weight: bold; */
+    z-index: 100;
     font-family: sans-serif;
 }
 
@@ -645,15 +645,7 @@
       </div>
   </div>
 </div>
-<script type="text/javascript"
-        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
-</script>
-<script type="text/javascript">
-   (function(){
-      emailjs.init({
-        publicKey: "ryy-0Gdq6RqDoXCwX",
-      });
-   })();
+
 </script>
 
 <script>
@@ -702,21 +694,22 @@
 
     // Add current URL
     data['url'] = window.location.href;
-
+    console.log(data);
     // Send data directly to Google Sheet
     fetch('https://script.google.com/macros/s/AKfycbyjMjI4Mb29lj15bhiZDQAXEqBYVPlPToNeQ92Ma-9K6C0ICdC_rldJQRiDpIVJ-iqW/exec', {  // Replace with your Web App URL
         method: 'POST',
+        mode:"no-cors",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    .then(response => response.json())  // Convert the response to JSON
+    .then(response => {response.json();console.log(response);})
     .then(result => {
-        if (result.result === "success") {
-            console.log("Data submitted successfully to Google Sheets");
+    
+          
             window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
-        } 
+        
     })
     
 }
