@@ -678,41 +678,51 @@
 }
 
 
-    function submitForm(event) {
+function submitForm(event) {
     event.preventDefault();  // Ensure the form doesn't submit
     const formData = new FormData(event.target); // `event.target` refers to the form element
     const data = {};
-
+    
     // Add form fields to data object
     formData.forEach((value, key) => {
         data[key] = value;
     });
-
+    
     // Add the current date and time to the data
     const currentDate = new Date();
     data['submissionDate'] = currentDate.toISOString();  // Use ISO format for date
-
+    console.log(data);
     // Add current URL
     data['url'] = window.location.href;
-    console.log(data);
-    // Send data directly to Google Sheet
-    fetch('https://script.google.com/macros/s/AKfycbyjMjI4Mb29lj15bhiZDQAXEqBYVPlPToNeQ92Ma-9K6C0ICdC_rldJQRiDpIVJ-iqW/exec', {  // Replace with your Web App URL
+    
+    // Example structure of email data based on your EmailJS template
+    const emailData = {
+        name: data.name, // Assuming 'name' field exists in your form
+        email: data.email, // Assuming 'email' field exists in your form
+        phone: data.phone,
+        url: data.url
+    };
+
+    // First, send data to the Pabbly webhook
+    fetch('https://connect.pabbly.com/workflow/sendwebhookdata/IjU3NjYwNTZjMDYzNjA0M2Q1MjZhNTUzMTUxMzUi_pc', {
         method: 'POST',
-        mode:"no-cors",
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     })
-    .then(response => {response.json();console.log(response);})
-    .then(result => {
-    
-          
-            window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
-        
+   
+    .then(() => {
+       
+        window.location.href = './Thankyou/Thankyou.html'; // Redirect to thank you page
     })
-    
+    .catch(error => {
+        console.error('Error:', error);
+        alert('There was an error submitting the form.');
+    });
 }
+
+
 
 
 
